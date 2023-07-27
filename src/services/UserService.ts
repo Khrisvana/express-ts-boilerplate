@@ -1,5 +1,6 @@
 import { autoInjectable } from "tsyringe";
 import UserRepository from "@/repositories/UserRepositoriy";
+import { Request } from "express";
 
 @autoInjectable()
 export default class UserService {
@@ -9,7 +10,11 @@ export default class UserService {
         this.userRepository = userRepository
     }
 
-    print() {
-        return this.userRepository.print()
+    async list(request: Request) {
+        return await this.userRepository.list(request)
+    }
+
+    async create(request: Request) {
+        return await this.userRepository.create(request)
     }
 }
