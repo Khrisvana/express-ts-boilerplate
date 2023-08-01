@@ -7,6 +7,7 @@ import registrationValidator from "@/validators/registrationValidator"
 const userController = container.resolve(UserController)
 
 export default function(app: Express) {
-    app.get("/", userController.list())
+    app.get("/user", userController.list())
+    app.get("/user/:id", userController.detail())
     app.post("/user", registrationValidator(), userController.create())
 }

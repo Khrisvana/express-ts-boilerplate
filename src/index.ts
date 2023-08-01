@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import routes from "@/routes"
 import multer from "multer"
+import ErrorHandler from "@/exceptions/ErrorHandler"
 
 dotenv.config()
 
@@ -14,6 +15,8 @@ app.use(express.json())
 app.use(upload.array(""))
 
 routes(app)
+
+app.use(ErrorHandler)
 
 app.listen(PORT, () => {
     console.log(`Running on port ${PORT}`)

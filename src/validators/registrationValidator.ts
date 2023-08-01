@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express"
 import { z } from "zod"
+import UserRepository from "@/repositories/UserRepository"
+import UserService from "@/services/UserService"
 
 export default function() {
+    let userService = new UserService(new UserRepository())
+
     const schema = z.object({
-        email: z.string().min(1, "required"),
-        name: z.string().min(1, "required"),
+        email: z.string().nonempty().email().refine(async (value: string) => {
+            return !await userService.detailUnique({ email: value })
+        }, "Email has been taken"),
+        name: z.string().nonempty(),
     })
 
     return async function (request: Request, response: Response, next: NextFunction) {
@@ -14,6 +20,6 @@ export default function() {
         if (result.success) {
             return next()
         }
-        return response.status(400).send(result.error)
+        return response.status(400).send(result.error.flatten())
     }
 }
