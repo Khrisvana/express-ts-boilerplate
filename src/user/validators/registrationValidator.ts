@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { z } from "zod"
-import UserRepository from "@/repositories/UserRepository"
-import UserService from "@/services/UserService"
+import UserRepository from "@/user/repositories/UserRepository"
+import UserService from "@/user/services/UserService"
 
 export default function() {
     let userService = new UserService(new UserRepository())

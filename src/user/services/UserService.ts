@@ -1,5 +1,5 @@
 import { autoInjectable } from "tsyringe";
-import UserRepository from "@/repositories/UserRepository";
+import UserRepository from "@/user/repositories/UserRepository";
 import { Request } from "express";
 import { Prisma } from "@prisma/client";
 
