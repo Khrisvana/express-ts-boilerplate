@@ -1,22 +1,28 @@
 import { NextFunction, Request, Response } from "express"
 import { z } from "zod"
-import UserRepository from "@/user/repositories/UserRepository"
+import { container } from "tsyringe"
 import UserService from "@/user/services/UserService"
 
 export default function() {
-    let userService = new UserService(new UserRepository())
+    let userService = container.resolve(UserService)
 
     const schema = z.object({
-        email: z.string().nonempty().email().refine(async (value: string) => {
+        email: z.string().email().refine(async (value: string) => {
             return !await userService.detailUnique({ email: value })
         }, "Email has been taken"),
-        name: z.string().nonempty(),
-    })
+        first_name: z.string(),
+        last_name: z.string().optional(),
+        password: z.string(),
+        confirm_password: z.string(),
+    }).refine((data) => data.password === data.confirm_password, {
+        message: "Passwords don't match",
+        path: ["confirm_password"], // path of error
+    });
 
     return async function (request: Request, response: Response, next: NextFunction) {
-        const { email, name } = request.body
+        const payload = request.body
         
-        const result = await schema.safeParseAsync({ email, name })
+        const result = await schema.safeParseAsync(payload)
         if (result.success) {
             return next()
         }

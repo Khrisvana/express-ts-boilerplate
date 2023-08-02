@@ -19,12 +19,9 @@ export default class UserRepository {
     }
 
     async create(request: Request) {
-        const { email, name } = request.body
+        const data = request.body
         const user = await prisma.user.create({
-            data: {
-                email: email,
-                name: name,
-            }
+            data: data
         })
 
         return user
