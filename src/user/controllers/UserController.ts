@@ -3,6 +3,7 @@ import UserService from "@/user/services/UserService";
 import type { NextFunction, Request, Response } from "express";
 import type { ValidatedRequest } from "@/types"
 import userSerializer from "@/user/serializers/UserSerializer";
+import responseFormat from "@/utils/responseFormat";
 
 @autoInjectable()
 export default class UserController {
@@ -12,7 +13,7 @@ export default class UserController {
         console.log(this.userService)
         try {
             let result = await this.userService.list(request.query) 
-            response.json(result.map(userSerializer))
+            response.json(responseFormat(result.map(userSerializer)))
         } catch (error) {
             next(error)
         }
@@ -20,7 +21,8 @@ export default class UserController {
 
     public async detail(request: Request, response: Response, next: NextFunction) {
         try {
-            return response.json(await this.userService.detail(parseInt(request.params.id), request.query))
+            let result = await this.userService.detail(parseInt(request.params.id), request.query)
+            return response.json(responseFormat(result))
         } catch (error) {
             next(error)
         }

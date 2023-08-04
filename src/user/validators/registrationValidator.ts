@@ -3,6 +3,7 @@ import { z } from "zod"
 import { container } from "tsyringe"
 import UserService from "@/user/services/UserService"
 import { ValidatedRequest } from "@/types"
+import responseFormat from "@/utils/responseFormat"
 
 export default function() {
     let userService = container.resolve(UserService)
@@ -26,7 +27,7 @@ export default function() {
             const payload = request.body
             const result = await schema.safeParseAsync(payload)
             if (!result.success) {
-                return response.status(400).send(result.error.flatten())
+                return response.status(400).json(responseFormat(result.error.format(), "validation error"))
             }
     
             request.validated = result
