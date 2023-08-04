@@ -1,14 +1,10 @@
-import { autoInjectable } from "tsyringe";
+import { injectable, inject } from "tsyringe";
 import UserRepository from "@/user/repositories/UserRepository";
 import type { CreateUserInput } from "@/types"
 
-@autoInjectable()
+@injectable()
 export default class UserService {
-    private userRepository: UserRepository
-    
-    constructor (userRepository: UserRepository) {
-        this.userRepository = userRepository
-    }
+    constructor(@inject("IUserRepository") private readonly userRepository: UserRepository){}
 
     async list(queryParams: { email?: string, first_name?: string, last_name?: string }) {
         return await this.userRepository.list(queryParams)

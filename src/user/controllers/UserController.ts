@@ -1,18 +1,15 @@
-import { autoInjectable } from "tsyringe";
+import { autoInjectable, inject } from "tsyringe";
 import UserService from "@/user/services/UserService";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { ValidatedRequest } from "@/types"
 import userSerializer from "@/user/serializers/UserSerializer";
 
 @autoInjectable()
 export default class UserController {
-    private userService: UserService
+    constructor(@inject("IUserService") private readonly userService: UserService ){}
 
-    constructor (userService: UserService) {
-        this.userService = userService
-    }
-    
     public async list(request: Request, response: Response, next: NextFunction) {
+        console.log(this.userService)
         try {
             let result = await this.userService.list(request.query) 
             response.json(result.map(userSerializer))
