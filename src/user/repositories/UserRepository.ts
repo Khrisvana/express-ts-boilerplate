@@ -1,8 +1,10 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 import type { CreateUserInput } from "@/types"
+import { injectable } from 'tsyringe'
 
 const prisma = new PrismaClient()
 
+@injectable()
 export default class UserRepository {
     async list(queryParams: { email?: string, first_name?: string, last_name?: string }) {
         const users = await prisma.user.findMany({

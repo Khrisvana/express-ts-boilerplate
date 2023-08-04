@@ -1,8 +1,10 @@
+import 'reflect-metadata'
+
 import express from "express"
 import dotenv from "dotenv"
-import routes from "@/routes"
 import multer from "multer"
 import ErrorHandler from "@/main/exceptions/ErrorHandler"
+import registers from "./registers"
 
 dotenv.config()
 
@@ -14,7 +16,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(upload.any())
 
-routes(app)
+
+registers(app)
 
 app.use(ErrorHandler)
 
