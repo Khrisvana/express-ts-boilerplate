@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { z } from "zod"
 import { container } from "tsyringe"
 import UserService from "@/user/services/UserService"
+import { ValidatedRequest } from "@/types"
 
 export default function() {
     let userService = container.resolve(UserService)
@@ -19,13 +20,19 @@ export default function() {
         path: ["confirm_password"], // path of error
     });
 
-    return async function (request: Request, response: Response, next: NextFunction) {
-        const payload = request.body
+    return async function (request: ValidatedRequest, response: Response, next: NextFunction) {
         
-        const result = await schema.safeParseAsync(payload)
-        if (result.success) {
-            return next()
+        try {
+            const payload = request.body
+            const result = await schema.safeParseAsync(payload)
+            if (!result.success) {
+                return response.status(400).send(result.error.flatten())
+            }
+    
+            request.validated = result
+            next()
+        } catch (error) {
+            next(error)
         }
-        return response.status(400).send(result.error.flatten())
     }
 }

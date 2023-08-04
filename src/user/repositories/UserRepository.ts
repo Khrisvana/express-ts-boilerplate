@@ -1,35 +1,51 @@
 import { PrismaClient, Prisma } from '@prisma/client'
-import { Request } from "express"
+import type { CreateUserInput } from "@/types"
 
 const prisma = new PrismaClient()
 
 export default class UserRepository {
-    async list(request: Request) {
-        const users = await prisma.user.findMany() 
+    async list(queryParams: { email?: string, first_name?: string, last_name?: string }) {
+        const users = await prisma.user.findMany({
+            where: queryParams
+        }) 
         return users 
     }
 
-    async detail(id: number, request: Request) {
+    async detail(id: number, queryParams: { email?: string, first_name?: string, last_name?: string }) {
         const users = await prisma.user.findFirstOrThrow({
             where: {
-                id
+                id,
+                ...queryParams
             }
         }) 
         return users 
     }
 
-    async create(request: Request) {
-        const data = request.body
+    async create(validatedData: CreateUserInput) {
         const user = await prisma.user.create({
-            data: data
+            data: validatedData
         })
 
         return user
     }
 
-    async detailUnique(query: Prisma.UserWhereUniqueInput) {
-        const users = await prisma.user.findUnique({
-            where: query
+    async detailUnique(queryParams: { email?: string, first_name?: string, last_name?: string }) {
+        let where: Prisma.UserWhereInput = {} as Prisma.UserWhereInput
+
+        if (queryParams.email) {
+            where.email = queryParams.email
+        }
+
+        if (queryParams.first_name) {
+            where.first_name = queryParams.first_name
+        }
+
+        if (queryParams.last_name) {
+            where.last_name = queryParams.last_name
+        }
+
+        const users = await prisma.user.findFirst({
+            where
         }) 
         return users 
     }
