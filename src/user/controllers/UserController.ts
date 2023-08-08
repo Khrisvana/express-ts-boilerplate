@@ -10,7 +10,6 @@ export default class UserController {
     constructor(@inject("IUserService") private readonly userService: UserService ){}
 
     public async list(request: Request, response: Response, next: NextFunction) {
-        console.log(this.userService)
         try {
             let result = await this.userService.list(request.query) 
             response.json(responseFormat(result.map(userSerializer)))
@@ -30,10 +29,10 @@ export default class UserController {
 
     public async create(request: ValidatedRequest, response: Response, next: NextFunction) {
         let payload = {
-            email: request.validated?.email.toString(),
-            password: request.validated?.password.toString(),
-            first_name: request.validated?.first_name.toString(),
-            last_name: request.validated?.last_name.toString(),
+            email: request.validated?.email,
+            password: request.validated?.password,
+            first_name: request.validated?.first_name,
+            last_name: request.validated?.last_name,
         }
         try {
             return response.json(await this.userService.create(payload))
